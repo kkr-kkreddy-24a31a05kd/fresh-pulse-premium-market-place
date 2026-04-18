@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Pulse | Premium Marketplace</title>
+    <style>
+        :root {
+            --primary: #2d6a4f;
+            --primary-dark: #1b4332;
+            --secondary: #52b788;
+            --accent: #d8f3dc;
+            --bg: #f8fdf9;
+            --text: #081c15;
+            --white: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links li a:hover, .nav-links li a.active {
+            color: var(--primary);
+        }
+
+        .cart-count-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        /* Section Handling */
+        section {
+            display: none;
+            padding: 100px 5% 60px;
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Section */
+        #home {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 1rem; }
+        .hero-tagline { font-size: 1.5rem; margin-bottom: 2rem; opacity: 0.9; }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 28px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        /* Products Grid */
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            min-height: 400px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid #f0f0f0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #eee;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
+        .product-price { color: var(--primary); font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; }
+
+        .product-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #ddd;
+            color: #555;
+            padding: 6px;
+            font-size: 0.85rem;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .btn-outline:hover { background: #f9f9f9; border-color: var(--primary); color: var(--primary); }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 50px;
+        }
+
+        .pg-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pg-btn:hover:not(:disabled) {
+            background: var(--accent);
+        }
+
+        .pg-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .pg-btn:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Cart Styles */
+        .cart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Contact Section */
+        .contact-card {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Chatbot UI */
+        #chat-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1001;
+            font-size: 1.5rem;
+        }
+
+        #chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 1001;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        .chat-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; }
+        .chat-content { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; }
+        .chat-input { padding: 10px; border-top: 1px solid #eee; display: flex; }
+        .chat-input input { flex: 1; border: none; outline: none; padding: 5px; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .product-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo" onclick="showSection('home')">🌱 Fresh Pulse</div>
+        <ul class="nav-links">
+            <li><a onclick="showSection('home')" id="nav-home">Home</a></li>
+            <li><a onclick="showSection('products')" id="nav-products">Products</a></li>
+            <li><a onclick="showSection('cart')" id="nav-cart">Cart <span class="cart-count-badge" id="cart-badge">0</span></a></li>
+            <li><a onclick="showSection('contact')" id="nav-contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sections -->
+    <section id="home" class="active">
+        <h1 class="hero-title">Fresh Pulse Premium Marketplace</h1>
+        <p class="hero-tagline">Fresh From Farms to Your Doorstep</p>
+        <button class="btn btn-primary" onclick="showSection('products')">Shop Now</button>
+    </section>
+
+    <section id="products">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 2.5rem; color: var(--primary);">Our Harvest</h2>
+            <p>Premium quality items selected daily for your health.</p>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterProducts('all')">All</button>
+            <button class="filter-btn" onclick="filterProducts('Fruit')">Fruits</button>
+            <button class="filter-btn" onclick="filterProducts('Vegetable')">Vegetables</button>
+            <button class="filter-btn" onclick="filterProducts('Grain')">Grains</button>
+            <button class="filter-btn" onclick="filterProducts('Dairy')">Dairy</button>
+            <button class="filter-btn" onclick="filterProducts('Organic')">Organic</button>
+        </div>
+
+        <div class="product-grid" id="product-container">
+            <!-- Dynamic Injection -->
+        </div>
+
+        <div class="pagination" id="pagination-container">
+            <!-- Dynamic Buttons -->
+        </div>
+    </section>
+
+    <section id="cart">
+        <h2 style="text-align: center; margin-bottom: 30px; font-size: 2rem;">Your Shopping Basket</h2>
+        <div class="cart-container" id="cart-container">
+            <!-- Dynamic Cart Items -->
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="contact-card">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">Get In Touch</h2>
+            <p style="margin-bottom: 10px;">Have questions about our sourcing?</p>
+            <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary-dark);">
+                <p>📧 support@freshpulse.farm</p>
+                <p>📞 +1 (800) 555-0199</p>
+            </div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            <p style="font-size: 0.9rem; color: #777;">Address: 42 Eco Garden Lane, Farmville</p>
+        </div>
+    </section>
+
+    <!-- Chatbot UI -->
+    <div id="chat-trigger" onclick="toggleChat()">💬</div>
+    <div id="chat-window">
+        <div class="chat-header">PulseBot Help</div>
+        <div class="chat-content" id="chat-content">
+            <p style="background: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">
+                Hi! I'm PulseBot. Looking for the freshest tomatoes or our premium millets?
+            </p>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendChat(this)">
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const products = [
+            { id: 1, name: "Honeycrisp Apples", price: 4.50, cat: "Fruit", img: "https://images.unsplash.com/photo-1560806887-1e4cd0b6bcd6?w=400" },
+            { id: 2, name: "Cavendish Bananas", price: 1.20, cat: "Fruit", img: "https://images.unsplash.com/photo-1571771894821-ad9902d83f4e?w=400" },
+            { id: 3, name: "Organic Blueberries", price: 6.00, cat: "Fruit", img: "https://images.unsplash.com/photo-1497534446932-c946e7316a33?w=400" },
+            { id: 4, name: "Valencia Oranges", price: 3.50, cat: "Fruit", img: "https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=400" },
+            { id: 5, name: "Red Grapes", price: 5.20, cat: "Fruit", img: "https://images.unsplash.com/photo-1537640538966-79f369b41e8f?w=400" },
+            { id: 6, name: "Alphonso Mango", price: 12.00, cat: "Fruit", img: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=400" },
+            { id: 7, name: "Fresh Strawberries", price: 4.80, cat: "Fruit", img: "https://images.unsplash.com/photo-1464960350423-93c677028c73?w=400" },
+            { id: 8, name: "Kiwi Gold", price: 7.50, cat: "Fruit", img: "https://images.unsplash.com/photo-1585059895312-70c982c5535b?w=400" },
+            { id: 9, name: "Organic Spinach", price: 2.99, cat: "Vegetable", img: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400" },
+            { id: 10, name: "Heirloom Tomatoes", price: 5.50, cat: "Vegetable", img: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400" },
+            { id: 11, name: "Cruciferous Broccoli", price: 3.20, cat: "Vegetable", img: "https://images.unsplash.com/photo-1452948491233-ad8a1ed01085?w=400" },
+            { id: 12, name: "Red Bell Pepper", price: 2.50, cat: "Vegetable", img: "https://images.unsplash.com/photo-1566275529824-cca6d00a27b0?w=400" },
+            { id: 13, name: "Baby Carrots", price: 1.99, cat: "Vegetable", img: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400" },
+            { id: 14, name: "Fresh Garlic Bulb", price: 0.99, cat: "Vegetable", img: "https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=400" },
+            { id: 15, name: "Purple Cabbage", price: 2.80, cat: "Vegetable", img: "https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=400" },
+            { id: 16, name: "Sweet Potatoes", price: 3.40, cat: "Vegetable", img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400" },
+            { id: 17, name: "Basmati Rice 5kg", price: 18.00, cat: "Grain", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+            { id: 18, name: "Quinoa White", price: 9.50, cat: "Grain", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+            { id: 19, name: "Pearl Millet", price: 7.20, cat: "Grain", img: "https://images.unsplash.com/photo-1593113638586-eaf2f1364491?w=400" },
+            { id: 20, name: "Whole Wheat Flour", price: 11.00, cat: "Grain", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400" },
+            { id: 21, name: "Organic Oats", price: 6.40, cat: "Grain", img: "https://images.unsplash.com/photo-1586439702132-47e17286bb9c?w=400" },
+            { id: 22, name: "Brown Lentils", price: 4.50, cat: "Grain", img: "https://images.unsplash.com/photo-1515942661900-94b3d197c56d?w=400" },
+            { id: 23, name: "Black Beans", price: 3.99, cat: "Grain", img: "https://images.unsplash.com/photo-1551462147-ff290ca36152?w=400" },
+            { id: 24, name: "Chickpeas Dry", price: 5.10, cat: "Grain", img: "https://images.unsplash.com/photo-1515543904379-3d757afe72e4?w=400" },
+            { id: 25, name: "A2 Farm Milk 1L", price: 3.50, cat: "Dairy", img: "https://images.unsplash.com/photo-1550583724-1255d1426639?w=400" },
+            { id: 26, name: "Greek Yogurt Plain", price: 5.00, cat: "Dairy", img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400" },
+            { id: 27, name: "Artisanal Cheese", price: 14.00, cat: "Dairy", img: "https://images.unsplash.com/photo-1486297678162-ad2a19b05844?w=400" },
+            { id: 28, name: "Unsalted Farm Butter", price: 6.20, cat: "Dairy", img: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400" },
+            { id: 29, name: "Organic Eggs Dozen", price: 7.50, cat: "Dairy", img: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=400" },
+            { id: 30, name: "Cottage Cheese", price: 4.80, cat: "Dairy", img: "https://images.unsplash.com/photo-1559561853-08451507cbe7?w=400" },
+            { id: 31, name: "Almond Milk (Nut)", price: 5.50, cat: "Dairy", img: "https://images.unsplash.com/photo-1563229285-177324026011?w=400" },
+            { id: 32, name: "Heavy Cream", price: 4.25, cat: "Dairy", img: "https://images.unsplash.com/photo-1594489379835-f2545041075c?w=400" },
+            { id: 33, name: "Wild Forest Honey", price: 15.00, cat: "Organic", img: "https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?w=400" },
+            { id: 34, name: "Organic Turmeric", price: 8.90, cat: "Organic", img: "https://images.unsplash.com/photo-1615485500704-8e990f3900f7?w=400" },
+            { id: 35, name: "Cold Pressed Coconut Oil", price: 19.00, cat: "Organic", img: "https://images.unsplash.com/photo-1620706857370-e1b977f7f012?w=400" },
+            { id: 36, name: "Himalayan Pink Salt", price: 4.50, cat: "Organic", img: "https://images.unsplash.com/photo-1513222482315-99899f816c87?w=400" },
+            { id: 37, name: "Organic Kale", price: 3.90, cat: "Organic", img: "https://images.unsplash.com/photo-1524179524662-4dc0ca3a9155?w=400" },
+            { id: 38, name: "Avocado Hass", price: 2.50, cat: "Organic", img: "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400" },
+            { id: 39, name: "Medjool Dates", price: 13.00, cat: "Organic", img: "https://images.unsplash.com/photo-1504301549484-9337f7a22953?w=400" },
+            { id: 40, name: "Chia Seeds Organic", price: 9.20, cat: "Organic", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+            { id: 41, name: "Raw Cacao Nibs", price: 11.50, cat: "Organic", img: "https://images.unsplash.com/photo-1565071559227-20ab25b7685e?w=400" }
+        ];
+
+        // --- STATE ---
+        let cart = JSON.parse(localStorage.getItem('freshPulseCart')) || [];
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 30;
+
+        // --- LOGIC ---
+
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            
+            const target = document.getElementById(id);
+            const navLink = document.getElementById(`nav-${id}`);
+            
+            if(target) target.classList.add('active');
+            if(navLink) navLink.classList.add('active');
+            
+            if(id === 'products') {
+                currentPage = 1; // Reset to page 1 when navigating to products
+                renderProducts();
+            }
+            if(id === 'cart') renderCart();
+            
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function filterProducts(cat) {
+            currentFilter = cat;
+            currentPage = 1; // Reset page when filtering
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.includes(cat) || (cat === 'all' && btn.textContent === 'All'));
+            });
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('product-container');
+            const pgContainer = document.getElementById('pagination-container');
+            container.innerHTML = '';
+            
+            // 1. Filter
+            const filtered = currentFilter === 'all' 
+                ? products 
+                : products.filter(p => p.cat === currentFilter);
+            
+            // 2. Paginate
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedItems = filtered.slice(startIndex, startIndex + itemsPerPage);
+            
+            // 3. Render Items
+            paginatedItems.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.img}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x180?text=Fresh+Pulse'">
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">$${p.price.toFixed(2)}</div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart(${p.id})">Add to Cart</button>
+                            <div style="display: flex; gap: 5px; margin-top: 5px;">
+                                <a href="https://www.youtube.com/results?search_query=how+to+cook+${encodeURIComponent(p.name)}" target="_blank" class="btn-outline" style="flex:1">Watch Video</a>
+                                <a href="https://www.google.com/search?q=${encodeURIComponent(p.name)}+nutritional+benefits" target="_blank" class="btn-outline" style="flex:1">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // 4. Render Pagination Controls
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const pgContainer = document.getElementById('pagination-container');
+            pgContainer.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pg-btn';
+            prevBtn.innerText = 'Prev';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { currentPage--; renderProducts(); window.scrollTo({top: 0, behavior: 'smooth'}); };
+            pgContainer.appendChild(prevBtn);
+
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = `pg-btn ${i === currentPage ? 'active' : ''}`;
+                btn.innerText = i;
+                btn.onclick = () => { currentPage = i; renderProducts(); window.scrollTo({top: 0, behavior: 'smooth'}); };
+                pgContainer.appendChild(btn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pg-btn';
+            nextBtn.innerText = 'Next';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { currentPage++; renderProducts(); window.scrollTo({top: 0, behavior: 'smooth'}); };
+            pgContainer.appendChild(nextBtn);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            saveCart();
+            updateCartBadge();
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Added! ✓';
+            btn.style.background = '#1b4332';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1000);
+        }
+
+        function saveCart() {
+            localStorage.setItem('freshPulseCart', JSON.stringify(cart));
+        }
+
+        function updateCartBadge() {
+            document.getElementById('cart-badge').textContent = cart.length;
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-container');
+            container.innerHTML = '';
+            
+            if(cart.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding: 40px;">Your basket is empty. Start shopping!</p>';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <small style="color: #888;">${item.cat}</small>
+                    </div>
+                    <div>
+                        <span>$${item.price.toFixed(2)}</span>
+                        <button onclick="removeFromCart(${index})" style="margin-left: 15px; border:none; background:none; color:red; cursor:pointer;">Remove</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'cart-total';
+            totalDiv.innerHTML = `Total: $${total.toFixed(2)}<br>
+                <button class="btn btn-primary" style="margin-top: 15px;" onclick="checkout()">Proceed to Checkout</button>`;
+            container.appendChild(totalDiv);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartBadge();
+            renderCart();
+        }
+
+        function checkout() {
+            alert('Thank you for shopping at Fresh Pulse! Your premium order is being processed.');
+            cart = [];
+            saveCart();
+            updateCartBadge();
+            showSection('home');
+        }
+
+        // --- Chatbot ---
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendChat(input) {
+            const val = input.value.trim();
+            if(!val) return;
+            const content = document.getElementById('chat-content');
+            content.innerHTML += `<p style="text-align: right; background: #eee; padding: 8px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">${val}</p>`;
+            input.value = '';
+            setTimeout(() => {
+                content.innerHTML += `<p style="background: var(--accent); padding: 8px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">That sounds interesting! Our farmers just brought in some fresh items. You can find them in our collection.</p>`;
+                content.scrollTop = content.scrollHeight;
+            }, 600);
+        }
+
+        window.onload = () => {
+            updateCartBadge();
+            renderProducts();
+        };
+    </script>
+</body>
+</html>
